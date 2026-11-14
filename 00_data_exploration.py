@@ -209,11 +209,14 @@ for col in numerical_cols:
     plt.close()
 
 # %% Show Preprocessed DataFrame
-data_loader.preprocess_data()
+X_train, X_test, y_train, y_test = data_loader.get_data_split()
 
-print("\nPreprocessed Dataset Shape:")
-print(data_loader.data.shape)
+print("\nPreprocessed Training Shape:")
+print(X_train.shape)
 
 print("\nFirst 5 Rows After Preprocessing:")
-print(data_loader.data.head())
+print(X_train.head())
+
+print("\nPreprocessed Testing Shape:")
+print(X_test.shape)
 
