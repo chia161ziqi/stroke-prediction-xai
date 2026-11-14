@@ -1,0 +1,6 @@
+Feature,Median Feature Value,Low Group Size,High Group Size,Low Group Mean SHAP,High Group Mean SHAP,Interpretation Note
+age,39.0,30,30,-0.2657664985749608,0.13312087094237937,Check distribution and encoding
+avg_glucose_level,88.07,30,30,-0.02930420645509741,0.006972919783051192,Check distribution and encoding
+bmi,28.15,30,30,0.00407267857470802,-0.004460884466909843,Check distribution and encoding
+work_type_Private,1.0,60,0,-0.0001243106489945233,,One-hot indicator: 0/1 are category absence/presence
+work_type_Govt_job,0.0,51,9,-0.00019126407297585362,-4.992915249229192e-05,One-hot indicator: 0/1 are category absence/presence

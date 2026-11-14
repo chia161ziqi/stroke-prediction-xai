@@ -1,0 +1,2 @@
+Patient Index,Actual,Predicted,Case Type,Probability,Threshold,Base Value,Top 3 SHAP Sum,Remaining SHAP Sum,Reconstructed Probability,Absolute Residual,Selection Rule
+202,1,1,True Positive,0.6431973771639288,0.6182490825704986,0.3704886934616941,0.2578062569997019,0.014910029544780629,0.6432049800061765,7.602842247766972e-06,First stroke-positive case in seeded held-out sample

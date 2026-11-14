@@ -1,0 +1,2 @@
+Patient Index,True Label,RF Probability,SVM Probability,SVM Threshold,SVM Case Type
+202,1,0.6431973771639288,0.7765076641745486,0.7439205884395151,True Positive

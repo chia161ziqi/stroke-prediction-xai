@@ -1,0 +1,2 @@
+Patient Index,Actual Stroke,Predicted Stroke,Case Type,Probability,Threshold,SHAP Expected Value
+202,1,1,True Positive,0.7765076641745486,0.7439205884395151,0.3814567407049455
