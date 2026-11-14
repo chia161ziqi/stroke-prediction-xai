@@ -1,8 +1,3 @@
-# %% [markdown]
-# Task 6 — SVM + Kernel SHAP
-# Run after 03_shap.py from the project root: py 06_kernel_shap.py
-# Uses the existing utils.py and results/shap/ files.
-
 # %% 1. Imports and configuration
 from pathlib import Path
 import hashlib

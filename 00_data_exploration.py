@@ -52,6 +52,34 @@ missing_summary = pd.DataFrame({
 
 print(missing_summary)
 
+# %% Missing Values Visualization
+save_dir = Path("figures")
+save_dir.mkdir(parents=True, exist_ok=True)
+
+missing_plot = missing_counts[missing_counts > 0]
+
+plt.figure(figsize=(7, 4))
+missing_plot.plot(kind="bar", color="steelblue")
+
+plt.title("Missing Values by Feature")
+plt.xlabel("Feature")
+plt.ylabel("Missing Count")
+plt.xticks(rotation=0)
+plt.tight_layout()
+
+file_path = save_dir / "missing_values.png"
+
+plt.savefig(
+    file_path,
+    dpi=300,
+    bbox_inches="tight"
+)
+
+print(f"Saved: {file_path}")
+
+plt.show()
+plt.close()
+
 # %% Stroke Class Counts
 print("\nStroke Class Counts:")
 
@@ -207,6 +235,51 @@ for col in numerical_cols:
 
     plt.show()
     plt.close()
+
+
+# %% EDA Panel
+import matplotlib.image as mpimg
+
+figure_paths = [
+    ("Stroke Distribution", "figures/histograms/stroke_distribution.png"),
+    ("Age Distribution", "figures/histograms/age_distribution.png"),
+    ("Glucose Distribution", "figures/histograms/avg_glucose_level_distribution.png"),
+    ("BMI Distribution", "figures/histograms/bmi_distribution.png"),
+    ("Missing Values", "figures/missing_values.png"),
+    ("Age by Stroke", "figures/stroke_comparisons/age_by_stroke.png"),
+    ("Glucose by Stroke", "figures/stroke_comparisons/avg_glucose_level_by_stroke.png"),
+    ("BMI by Stroke", "figures/stroke_comparisons/bmi_by_stroke.png")
+]
+
+fig, axes = plt.subplots(4, 2, figsize=(16, 22))
+
+for i, (ax, (title, path)) in enumerate(zip(axes.flat, figure_paths)):
+    img = mpimg.imread(path)
+    ax.imshow(img)
+    ax.axis("off")
+
+    # Caption below each figure
+    label = chr(97 + i)
+    ax.set_title("")
+    ax.text(
+        0.5, -0.04,
+        f"Figure 1({label}). {title}",
+        transform=ax.transAxes,
+        ha="center",
+        va="top",
+        fontsize=12
+    )
+
+plt.subplots_adjust(hspace=0.25, wspace=0.12)
+
+plt.savefig(
+    "figures/eda_panel.png",
+    dpi=300,
+    bbox_inches="tight"
+)
+
+plt.show()
+plt.close()
 
 # %% Show Preprocessed DataFrame
 X_train, X_test, y_train, y_test = data_loader.get_data_split()
