@@ -1,4 +1,5 @@
 # %% Imports
+import pandas as pd
 import matplotlib.pyplot as plt
 from utils import DataLoader
 
@@ -8,11 +9,17 @@ data_loader.load_dataset()
 data = data_loader.data
 
 # %% Show head
+print("\nDataset Shape:")
 print(data.shape)
+
+print("\nFirst 5 Rows:")
 data.head()
 
 # %% Show general statistics
 data.info()
+
+print("\nColumn Names:")
+print(data.columns.tolist())
 
 # %% Show histogram for all columns
 columns = data.columns
