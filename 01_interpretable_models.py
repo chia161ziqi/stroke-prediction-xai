@@ -10,13 +10,12 @@ from sklearn.metrics import f1_score, accuracy_score
 # %% Load and preprocess data
 data_loader = DataLoader()
 data_loader.load_dataset()
+data_loader.preprocess_data()
 
-# Split first
+# Split the data for evaluation
 X_train, X_test, y_train, y_test = data_loader.get_data_split()
-
-# Preprocess after splitting
-X_train, X_test = data_loader.preprocess_data(X_train, X_test)
-
+print(X_train.shape)
+print(X_test.shape)
 # Oversample the train data
 X_train, y_train = data_loader.oversample(X_train, y_train)
 print("After oversampling:", X_train.shape)
