@@ -2,6 +2,8 @@ import pandas as pd
 # Makes sure we see all columns
 pd.set_option('display.max_columns', None)
 from sklearn.model_selection import train_test_split
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import OneHotEncoder
 from imblearn.over_sampling import RandomOverSampler
 
 class DataLoader():
@@ -11,34 +13,36 @@ class DataLoader():
     def load_dataset(self, path="data/healthcare-dataset-stroke-data.csv"):
         self.data = pd.read_csv(path)
 
-    def preprocess_data(self):
-        # One-hot encode all categorical columns
-        categorical_cols = ["gender",
-                            "ever_married",
-                            "work_type",
-                            "Residence_type",
-                            "smoking_status"]
-        encoded = pd.get_dummies(self.data[categorical_cols], 
-                                prefix=categorical_cols)
+    def preprocess_data(self, X_train, X_test):
+        categorical_cols = ["gender", "ever_married", "work_type", "Residence_type", "smoking_status"]
 
-        # Update data with new columns
-        self.data = pd.concat([encoded, self.data], axis=1)
-        self.data.drop(categorical_cols, axis=1, inplace=True)
+        X_train = X_train.copy()
+        X_test = X_test.copy()
 
-        # Impute missing values of BMI
-        self.data.bmi = self.data.bmi.fillna(0)
-        
-        # Drop id as it is not relevant
-        self.data.drop(["id"], axis=1, inplace=True)
+        # BMI imputation: fit on training data only
+        imputer = SimpleImputer(strategy="median")
+        X_train["bmi"] = imputer.fit_transform(X_train[["bmi"]]).ravel()
+        X_test["bmi"] = imputer.transform(X_test[["bmi"]]).ravel()
 
-        # Standardization 
-        # Usually we would standardize here and convert it back later
-        # But for simplification we will not standardize / normalize the features
+        # One-hot encoding: fit on training data only
+        encoder = OneHotEncoder(handle_unknown="ignore", sparse_output=False, dtype=int)
+        train_encoded = encoder.fit_transform(X_train[categorical_cols])
+        test_encoded = encoder.transform(X_test[categorical_cols])
+        encoded_cols = encoder.get_feature_names_out(categorical_cols)
+
+        train_encoded = pd.DataFrame(train_encoded, columns=encoded_cols, index=X_train.index)
+        test_encoded = pd.DataFrame(test_encoded, columns=encoded_cols, index=X_test.index)
+
+        # Combine encoded and numerical features
+        X_train = pd.concat([train_encoded, X_train.drop(columns=categorical_cols)], axis=1)
+        X_test = pd.concat([test_encoded, X_test.drop(columns=categorical_cols)], axis=1)
+
+        return X_train, X_test
 
     def get_data_split(self):
-        X = self.data.iloc[:,:-1]
-        y = self.data.iloc[:,-1]
-        return train_test_split(X, y, test_size=0.20, random_state=2021)
+        X = self.data.drop(columns=["id", "stroke"])
+        y = self.data["stroke"]
+        return train_test_split(X, y, test_size=0.20, random_state=2021, stratify=y)
     
     def oversample(self, X_train, y_train):
         oversample = RandomOverSampler(sampling_strategy='minority')
