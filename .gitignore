@@ -20,3 +20,7 @@ __pycache__/
 
 # Logs
 *.log
+
+# Generated results and figures
+results/
+figures/
