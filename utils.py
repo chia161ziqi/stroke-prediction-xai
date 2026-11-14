@@ -4,7 +4,17 @@ pd.set_option('display.max_columns', None)
 from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import ColumnTransformer
 from imblearn.over_sampling import RandomOverSampler
+
+# %% Reusable Preprocessing Pipeline
+def build_preprocessor(X):
+    categorical_cols = ["gender", "ever_married", "work_type", "Residence_type", "smoking_status"]
+    numerical_cols = [col for col in X.columns if col not in categorical_cols]
+    return ColumnTransformer([
+        ("num", SimpleImputer(strategy="median"), numerical_cols),
+        ("cat", OneHotEncoder(handle_unknown="ignore", sparse_output=False, dtype=int), categorical_cols)
+    ], verbose_feature_names_out=False)
 
 class DataLoader():
     def __init__(self):
@@ -14,28 +24,13 @@ class DataLoader():
         self.data = pd.read_csv(path)
 
     def preprocess_data(self, X_train, X_test):
-        categorical_cols = ["gender", "ever_married", "work_type", "Residence_type", "smoking_status"]
+        preprocessor = build_preprocessor(X_train)
+        X_train_processed = preprocessor.fit_transform(X_train)
+        X_test_processed = preprocessor.transform(X_test)
+        feature_names = preprocessor.get_feature_names_out()
 
-        X_train = X_train.copy()
-        X_test = X_test.copy()
-
-        # BMI imputation: fit on training data only
-        imputer = SimpleImputer(strategy="median")
-        X_train["bmi"] = imputer.fit_transform(X_train[["bmi"]]).ravel()
-        X_test["bmi"] = imputer.transform(X_test[["bmi"]]).ravel()
-
-        # One-hot encoding: fit on training data only
-        encoder = OneHotEncoder(handle_unknown="ignore", sparse_output=False, dtype=int)
-        train_encoded = encoder.fit_transform(X_train[categorical_cols])
-        test_encoded = encoder.transform(X_test[categorical_cols])
-        encoded_cols = encoder.get_feature_names_out(categorical_cols)
-
-        train_encoded = pd.DataFrame(train_encoded, columns=encoded_cols, index=X_train.index)
-        test_encoded = pd.DataFrame(test_encoded, columns=encoded_cols, index=X_test.index)
-
-        # Combine encoded and numerical features
-        X_train = pd.concat([train_encoded, X_train.drop(columns=categorical_cols)], axis=1)
-        X_test = pd.concat([test_encoded, X_test.drop(columns=categorical_cols)], axis=1)
+        X_train = pd.DataFrame(X_train_processed, columns=feature_names, index=X_train.index)
+        X_test = pd.DataFrame(X_test_processed, columns=feature_names, index=X_test.index)
 
         return X_train, X_test
 
@@ -45,7 +40,7 @@ class DataLoader():
         return train_test_split(X, y, test_size=0.20, random_state=2021, stratify=y)
     
     def oversample(self, X_train, y_train):
-        oversample = RandomOverSampler(sampling_strategy='minority')
+        oversample = RandomOverSampler(sampling_strategy='minority', random_state=2021)
         # Convert to numpy and oversample
         x_np = X_train.to_numpy()
         y_np = y_train.to_numpy()
